@@ -22,7 +22,7 @@ defmodule ExCoveralls.Stats do
   end
 
   @doc """
-  Report the statistical information for he specified module.
+  Report the statistical information for the specified module.
   """
   def report(modules) do
     calculate_stats(modules)
@@ -30,6 +30,7 @@ defmodule ExCoveralls.Stats do
     |> generate_source_info
     |> skip_files
     |> ExCoveralls.StopWords.filter
+    |> ExCoveralls.Ignore.filter
   end
 
   @doc """
@@ -103,7 +104,7 @@ defmodule ExCoveralls.Stats do
   end
 
   defp count_lines(string) do
-    1 + Enum.count(string_to_charlist(string), fn(x) -> x == ?\n end)
+    1 + (Regex.scan(~r/\n/i, string) |> length)
   end
 
   @doc """
@@ -220,9 +221,4 @@ defmodule ExCoveralls.Stats do
     end
   end
 
-  if Version.compare(System.version, "1.3.0") == :lt do
-    defp string_to_charlist(string), do: String.to_char_list(string)
-  else
-    defp string_to_charlist(string), do: String.to_charlist(string)
-  end
 end
